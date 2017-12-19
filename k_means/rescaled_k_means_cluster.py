@@ -3,19 +3,13 @@
 """ 
     Skeleton code for k-means clustering mini-project.
 """
-
-
-
-
 import pickle
 import numpy
 import matplotlib.pyplot as plt
 import sys
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
-
-
-
+from sklearn.preprocessing import MinMaxScaler
 
 def Draw(pred, features, poi, mark_poi=False, name="image.png", f1_name="feature 1", f2_name="feature 2"):
     """ some plotting code designed to help you visualize your clusters """
@@ -42,9 +36,18 @@ def minMax(data_dict, feature_list):
         data = featureFormat(data_dict,[feature_list[i]]) # turn the second feature into an array as the method expects it to be...
         low = numpy.nanmin(data)
         high = numpy.amax(data)
-        print("feature: {}".format(feature_list))
+        print("feature: {}".format(feature_list[i]))
         print("low: {}".format(low))
         print("high: {}".format(high))
+
+def rescale(features, predict=None):
+    """ rescaled single set of features """
+    scaler = MinMaxScaler()
+    scaler.fit(features)
+    scaler.transform(features)
+    if predict:
+        print("Scaled value for {}: {}".format(predict,scaler.transform(predict)))
+
 
 ### load in the dict of dicts containing all the data on each person in the dataset
 data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r") )
@@ -57,6 +60,8 @@ feature_name2 = "salary"
 feature_list = [feature_name1,feature_name2]
 
 minMax(data_dict,feature_list)
+data = featureFormat(data_dict,feature_list)
+rescale(data,[[1000000,200000]])
 
 ### the input features we want to use 
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
@@ -69,6 +74,7 @@ poi  = "poi"
 features_list = [poi, feature_1, feature_2]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
+
 
 
 ### in the "clustering with 3 features" part of the mini-project,
